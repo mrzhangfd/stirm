@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.ContourMapper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.Contour">
+        <id property="contourYear" column="contour_year"/>
+        <result property="contourName" column="contour_name"/>
+        <result property="contourPoints" column="contour_points"/>
+        <result property="contourArea" column="contour_area"/>
+        <result property="contourPerimeter" column="contour_perimeter"/>
+        <result property="contourCentre" column="contour_centre"/>
+    </resultMap>
+
+    <sql id="tableName">
+        contour_info
+    </sql>
+
+    <sql id="tableColumns">
+        contour_year,contour_name,contour_points,contour_area,contour_perimeter,contour_centre
+    </sql>
+
+    <select id="selectByYear" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where
+        contour_year=#{contourYear}
+    </select>
+    <select id="selectByYearAndName" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where
+        contour_year=#{contourYear} and contour_name=#{contourName}
+    </select>
+</mapper>
