@@ -1,6 +1,6 @@
 package cn.sdu.icat.stirm.service.impl;
 
-import cn.sdu.icat.stirm.dal.dao.ContourDAO;
+import cn.sdu.icat.stirm.dal.dao.ContourDao;
 import cn.sdu.icat.stirm.dal.mapper.ContourMapper;
 import cn.sdu.icat.stirm.model.Contour;
 import cn.sdu.icat.stirm.service.ContourService;
@@ -22,7 +22,7 @@ public class ContourServiceImpl implements ContourService {
     private ContourMapper contourMapper;
 
     @Autowired
-    private ContourDAO contourDAO;
+    private ContourDao contourDAO;
 
 
     @Override

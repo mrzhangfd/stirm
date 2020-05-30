@@ -3,6 +3,8 @@ package cn.sdu.icat.stirm.controller;
 import cn.sdu.icat.stirm.checker.ContourChecker;
 import cn.sdu.icat.stirm.model.Contour;
 import cn.sdu.icat.stirm.service.ContourService;
+import cn.sdu.icat.stirm.util.ResponseResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +22,7 @@ import java.util.List;
 @RestController
 public class ContourController {
 
-    @Resource
+    @Autowired
     private ContourService contourService;
 
     @GetMapping("/listcontourinfo")
@@ -31,11 +33,12 @@ public class ContourController {
 
     @GetMapping("/getcontourinfo")
     public @ResponseBody
-    List<Contour> getContourInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) throws Exception {
+    ResponseResult<List<Contour>> getContourInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) throws Exception {
         //1、参数校验
         ContourChecker.check4GetContourInfo(contourYear, contourName);
         //2、获取轮廓信息
-        return contourService.getContourInfo(contourYear,contourName);
+//        return contourService.getContourInfo(contourYear,contourName);
+        return ResponseResult.success("success", contourService.getContourInfo(contourYear, contourName));
     }
 
 }

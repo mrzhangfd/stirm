@@ -14,7 +14,7 @@ import java.util.List;
  * Created on 2019/11/20 15:34.
  */
 @Repository
-public class ContourDAO {
+public class ContourDao {
 
     @Autowired
     private ContourMapper contourMapper;
