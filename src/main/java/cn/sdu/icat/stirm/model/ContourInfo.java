@@ -1,5 +1,6 @@
 package cn.sdu.icat.stirm.model;
 
+import com.mysql.cj.jdbc.Blob;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Created on 2019/11/7 9:28.
  */
 @Data
-public class Contour {
+public class ContourInfo {
 
     /**
      * 轮廓时间
@@ -24,7 +25,7 @@ public class Contour {
     /**
      * 轮廓本身
      */
-    private Byte[] contourPoints;
+    private byte[] contourPoints;
 
     /**
      * 轮廓面积

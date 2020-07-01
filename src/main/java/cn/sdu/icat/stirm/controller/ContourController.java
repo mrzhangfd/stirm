@@ -1,17 +1,15 @@
 package cn.sdu.icat.stirm.controller;
 
 import cn.sdu.icat.stirm.checker.ContourChecker;
-import cn.sdu.icat.stirm.model.Contour;
+import cn.sdu.icat.stirm.model.ContourInfo;
+import cn.sdu.icat.stirm.model.VO.ContourInfoVO;
 import cn.sdu.icat.stirm.service.ContourService;
 import cn.sdu.icat.stirm.util.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 轮廓控制器类
@@ -27,18 +25,57 @@ public class ContourController {
 
     @GetMapping("/listcontourinfo")
     public @ResponseBody
-    List<Contour> listContourInfo() {
+    List<ContourInfo> listContourInfo() {
         return contourService.getContourInfos();
     }
 
     @GetMapping("/getcontourinfo")
     public @ResponseBody
-    ResponseResult<List<Contour>> getContourInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) throws Exception {
+    ResponseResult<List<ContourInfo>> getContourInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) throws Exception {
         //1、参数校验
         ContourChecker.check4GetContourInfo(contourYear, contourName);
         //2、获取轮廓信息
 //        return contourService.getContourInfo(contourYear,contourName);
         return ResponseResult.success("success", contourService.getContourInfo(contourYear, contourName));
+    }
+
+
+    @GetMapping("/getcontourinfogroup")
+    public @ResponseBody
+    ResponseResult<Map<Integer, List<String>>> getContourInfoGroup() {
+
+        //2、获取轮廓信息
+        return ResponseResult.success("success", contourService.getContourInfoGroup());
+    }
+
+    @GetMapping("/getcontourallinfo")
+    public @ResponseBody
+    ResponseResult<List<ContourInfoVO>> getContourAllInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) throws Exception {
+        //1、参数校验
+        //ContourChecker.check4GetContourInfo(contourYear, contourName);
+
+        //2、获取轮廓信息
+        return ResponseResult.success("success", contourService.getOneContourAllInfo(contourYear, contourName));
+    }
+
+    @GetMapping("/getcontoursallinfo")
+    public @ResponseBody
+    ResponseResult<List<ContourInfoVO>> getContourAllInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") List<String> contourName) throws Exception {
+        //1、参数校验
+        //ContourChecker.check4GetContourInfo(contourYear, contourName);
+
+        //2、获取轮廓信息
+        return ResponseResult.success("success", contourService.getContoursAllInfo(contourYear, contourName));
+
+        //return null;
+    }
+
+    @GetMapping("/getcontourpath")
+    public @ResponseBody
+    ResponseResult<String> processMapContour(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName) {
+        String mapPath = contourService.processMapContour(contourYear, contourName);
+        return ResponseResult.success("success", mapPath);
+
     }
 
 }

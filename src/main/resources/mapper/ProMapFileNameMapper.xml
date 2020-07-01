@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.ProMapFileNameMapper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.PO.ProMapNamePO">
+        <id property="id" column="id"/>
+        <result property="contourYear" column="contour_year"/>
+        <result property="contourName" column="contour_name"/>
+        <result property="proMapName" column="pro_map_name"/>
+    </resultMap>
+
+    <sql id="tableName">
+        pro_map_file_name
+    </sql>
+
+    <sql id="tableColumns">
+        id,contour_year,contour_name,pro_map_name
+    </sql>
+    <insert id="insert">
+        insert into
+        <include refid="tableName"/>
+        (contour_year,contour_name,pro_map_name)
+        values
+        (#{contourYear},#{contourName},#{proMapName})
+
+    </insert>
+    <select id="selectOne" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where
+        contour_year=#{contourYear} and contour_name=#{contourName}
+    </select>
+
+
+</mapper>

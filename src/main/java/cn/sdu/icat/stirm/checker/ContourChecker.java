@@ -15,4 +15,9 @@ public class ContourChecker {
         }
     }
 
+    public static void check4GetObjectList(String prefix) throws Exception {
+        if (StringUtils.isEmpty(prefix)) {
+            throw new Exception("前缀名为空，异常");
+        }
+    }
 }

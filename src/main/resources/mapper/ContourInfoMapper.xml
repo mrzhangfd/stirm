@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.sdu.icat.stirm.dal.mapper.ContourMapper">
-    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.Contour">
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.ContourInfoMapper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.ContourInfo">
         <id property="contourYear" column="contour_year"/>
         <result property="contourName" column="contour_name"/>
         <result property="contourPoints" column="contour_points"/>
@@ -33,5 +33,26 @@
         <include refid="tableName"/>
         where
         contour_year=#{contourYear} and contour_name=#{contourName}
+    </select>
+    <select id="selectOneByYearAndName" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where
+        contour_year=#{contourYear} and contour_name=#{contourName}
+    </select>
+    <select id="selectAll" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+    </select>
+    <select id="selectContourYear" resultType="java.lang.Integer">
+        select
+        contour_year
+        from
+        <include refid="tableName"/>
+        group by contour_year
     </select>
 </mapper>

@@ -9,7 +9,7 @@
 
     <!-- HDFS配置 -->
     <hdp:configuration id="hadoopConfiguration">
-        fs.defaultFS="hdfs://192.168.9.199:9000"
+        <!--fs.defaultFS="hdfs://192.168.9.199:9000"-->
         <!--hadoop.home.dir="E:\hadoop"-->
     </hdp:configuration>
 

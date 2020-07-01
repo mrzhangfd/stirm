@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.MapPathMapper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.MapPath">
+        <id property="mapYear" column="map_year"/>
+        <result property="mapPath" column="map_path"/>
+
+    </resultMap>
+
+    <sql id="tableName">
+        map_path
+    </sql>
+
+    <sql id="tableColumns">
+        map_year,map_path
+    </sql>
+    <insert id="insert">
+        insert into
+        <include refid="tableName"/>
+        (map_year,map_path)
+        values
+        (#{mapYear},#{mapPath})
+
+    </insert>
+
+
+</mapper>

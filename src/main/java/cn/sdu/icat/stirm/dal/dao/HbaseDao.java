@@ -1,5 +1,8 @@
 package cn.sdu.icat.stirm.dal.dao;
 
+
+
+import cn.sdu.icat.stirm.model.RealEntity;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -14,18 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HbaseDao
- *
- * @author icatzfd
- * Created on 2020/5/30 19:57.
+ * Created by J on  17-10-23.
  */
+
 @Repository
 public class HbaseDao {
-
     @Autowired
     private HbaseTemplate hbaseTemplate;
 
     private final String encoding = "utf-8";
+
 
 
     /**
@@ -154,7 +155,7 @@ public class HbaseDao {
                 //scan.setFilter(pf);
                 ResultScanner rs = hTableInterface.getScanner(scan);
                 for(Result result:rs){
-                    //RealEntity realEntity = new RealEntity();
+                    RealEntity realEntity = new RealEntity();
                     //System.out.println(Bytes.toString(result.getRow()));
                     list.add(result);
                     /*realEntity.setObjectId(Bytes.toString(result.getRow()));

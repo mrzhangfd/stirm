@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 事件控制器
  *
  * @author icatzfd
  * Created on 2019/11/18 10:16.
