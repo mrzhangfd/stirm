@@ -11,7 +11,7 @@ import java.util.List;
  * 事件类
  * 对应mongodb中的event集合（表）
  *
- * @author icatzfd
+ * @author J
  * Created on 2019/11/18 14:27.
  */
 @Data

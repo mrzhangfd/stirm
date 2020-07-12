@@ -15,12 +15,22 @@ public enum FilePath {
      */
     OPENCV_FILE_PATH("D:" + File.separator + "OpenCV" + File.separator + "opencv_java340" + File.separator+"opencv_java340-x64.dll"),
 
+    /**
+     * 原始地图路径
+     */
     MAP_FILE_PATH("G:" + File.separator + "UsedMap" + File.separator),
+
+    /**
+     * 返回给前端的图片路径前缀
+     */
+    LOCALHOST_MAP_PATH("http://localhost:8080/image/"),
 
     /**
      * 处理好的图片路径
      */
-    PRO_MAP_FILE_PATH("G:" + File.separator + "UsedProcessedMap" + File.separator);
+    PRO_MAP_FILE_PATH("G:" + File.separator + "UsedProcessedMap" + File.separator),
+
+    DESKTOP("G:"+File.separator+"testimage"+File.separator);
 
     private String path;
 

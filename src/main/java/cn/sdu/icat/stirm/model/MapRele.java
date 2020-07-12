@@ -3,7 +3,7 @@ package cn.sdu.icat.stirm.model;
 import lombok.Data;
 
 /**
- * 地图之间的关联
+ * 地图关联
  *
  * @author icatzfd
  * Created on 2020/6/18 10:07.

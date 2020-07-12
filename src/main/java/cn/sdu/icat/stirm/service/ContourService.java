@@ -87,4 +87,22 @@ public interface ContourService {
      * @return 图片路径
      */
     String processMapContour(Integer contourYear, String contourName);
+
+    /**
+     * 批量处理区划
+     *
+     * @param contourYear    区划时间
+     * @param contourNameStr 区划名的集合str
+     * @return 图片路径
+     */
+    String processMapContourPatch(Integer contourYear, String contourNameStr);
+
+    /**
+     * 获取一个区划的关联
+     *
+     * @param contourYear 区划时间
+     * @param contourName 区划名
+     * @return 该区划的关联区划的图片路径
+     */
+    List<String> getOneContourRele(Integer contourYear, String contourName);
 }

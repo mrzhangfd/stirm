@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 对应Hbase中的实体类
  *
- * @author icatzfd
+ * @author J
  * Created on 2020/6/8 15:20.
  */
 @Data

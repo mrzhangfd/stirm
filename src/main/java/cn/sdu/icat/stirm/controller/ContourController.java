@@ -35,7 +35,6 @@ public class ContourController {
         //1、参数校验
         ContourChecker.check4GetContourInfo(contourYear, contourName);
         //2、获取轮廓信息
-//        return contourService.getContourInfo(contourYear,contourName);
         return ResponseResult.success("success", contourService.getContourInfo(contourYear, contourName));
     }
 
@@ -60,14 +59,22 @@ public class ContourController {
 
     @GetMapping("/getcontoursallinfo")
     public @ResponseBody
-    ResponseResult<List<ContourInfoVO>> getContourAllInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") List<String> contourName) throws Exception {
+    ResponseResult<List<ContourInfoVO>> getContoursAllInfo(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") List<String> contourName) throws Exception {
         //1、参数校验
         //ContourChecker.check4GetContourInfo(contourYear, contourName);
 
         //2、获取轮廓信息
         return ResponseResult.success("success", contourService.getContoursAllInfo(contourYear, contourName));
 
-        //return null;
+    }
+
+    @GetMapping("/getcontourrele")
+    public @ResponseBody ResponseResult<List<String>> getContourRele(@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName){
+        //1、参数校验
+        //ContourChecker.check4GetContourInfo(contourYear, contourName);
+
+        //2、获取轮廓信息
+        return ResponseResult.success("success", contourService.getOneContourRele(contourYear, contourName));
     }
 
     @GetMapping("/getcontourpath")

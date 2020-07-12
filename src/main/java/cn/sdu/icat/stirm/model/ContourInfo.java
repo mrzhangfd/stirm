@@ -1,6 +1,5 @@
 package cn.sdu.icat.stirm.model;
 
-import com.mysql.cj.jdbc.Blob;
 import lombok.Data;
 
 /**

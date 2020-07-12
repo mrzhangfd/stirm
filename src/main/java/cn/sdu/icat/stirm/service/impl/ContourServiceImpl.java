@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * 用户实现类
+ * 轮廓实现类
  *
  * @author icatzfd
  * Created on 2019/11/2 15:46.
@@ -136,14 +136,12 @@ public class ContourServiceImpl implements ContourService {
         System.out.println(contourNames);
         List<ContourInfoVO> contourInfoVOS = new ArrayList<>();
         for (String contourName : contourNames) {
-
             ContourInfoVO contourInfoVO = new ContourInfoVO();
             ContourInfo contourInfo = new ContourInfo();
             contourInfo = contourInfoMapper.selectOneByYearAndName(contourYear, contourName);
             if (contourInfo != null) {
                 MapRele mapRele = mapReleMapper.selectOne(contourYear, contourName);
                 if (mapRele != null) {
-
                     List<String> preContourList = new ArrayList<>();
                     List<String> nextContourList = new ArrayList<>();
                     if (mapRele.getPreContour() != null) {
@@ -156,7 +154,6 @@ public class ContourServiceImpl implements ContourService {
                         String[] nextContourStrArr = nextContourStr.split("\\+");
                         nextContourList = new ArrayList<>(Arrays.asList(nextContourStrArr));
                     }
-
                     contourInfoVO.setContourName(contourInfo.getContourName());
                     contourInfoVO.setContourYear(contourInfo.getContourYear());
                     contourInfoVO.setContourArea(contourInfo.getContourArea());
@@ -198,8 +195,7 @@ public class ContourServiceImpl implements ContourService {
         //先查询是否存在已经处理过的图片，若存在，直接返回路径，若不存在，写入数据库
         ProMapNamePO proMapNamePO = proMapFileNameMapper.selectOne(contourYear, contourName);
         if (proMapNamePO != null) {
-
-            return FilePath.PRO_MAP_FILE_PATH.getPath() + proMapNamePO.getProMapName();
+            return FilePath.LOCALHOST_MAP_PATH.getPath() + proMapNamePO.getProMapName();
         }
 
         //加载opencv的dll文件
@@ -225,10 +221,8 @@ public class ContourServiceImpl implements ContourService {
 
         //灰度化
         //Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2GRAY);
-
         //二值化
         //Imgproc.threshold(src, src, 120, 255, Imgproc.THRESH_BINARY);
-
         //Mat temp = new Mat(src.size(), CvType.CV_8S, new Scalar(0, 255, 0));
         //temp.copyTo();
 
@@ -238,26 +232,108 @@ public class ContourServiceImpl implements ContourService {
         //画出轮廓
         Imgproc.drawContours(temp, matOfPoints, 0, new Scalar(255, 255, 255), 5);
 
+        //使用时间戳
+        String proMapName = System.currentTimeMillis() + ".jpg";
+        System.out.println(Imgcodecs.imwrite(FilePath.PRO_MAP_FILE_PATH.getPath() + proMapName, temp));
+
+        proMapFileNameMapper.insert(contourYear, contourName, proMapName);
+
+        String path = FilePath.LOCALHOST_MAP_PATH.getPath() + proMapName;
+
+        return path;
+    }
+
+    @Override
+    public String processMapContourPatch(Integer contourYear, String contourNameStr) {
+
+        //先查询是否存在已经处理过的图片，若存在，直接返回路径，若不存在，写入数据库
+        ProMapNamePO proMapNamePO = proMapFileNameMapper.selectOne(contourYear, contourNameStr);
+        if (proMapNamePO != null) {
+            return FilePath.LOCALHOST_MAP_PATH.getPath() + proMapNamePO.getProMapName();
+        }
+
+        String[] contourNamesArr = contourNameStr.split("\\+");
+        List<String> contourNames = new ArrayList<>(Arrays.asList(contourNamesArr));
+        //加载opencv的dll文件
+        String opencvPath = FilePath.OPENCV_FILE_PATH.getPath();
+        System.load(opencvPath);
+
+        //读入图片
+        Mat src = Imgcodecs.imread(FilePath.MAP_FILE_PATH.getPath() + contourYear + ".jpg");
+
+        //复制到temp
+        Mat temp = new Mat();
+        src.copyTo(temp);
+
+        List<MatOfPoint> matOfPoints = new ArrayList<>();
+
+        //错误的初始化位置
+        //List<Point> points = new ArrayList<>();
+
+        for (String contourName : contourNames) {
+            //获取对应的轮廓
+            List<ContourPoint> contourPoints = contourPointMapper.selectByYearAndName(contourYear, contourName);
+            //上面points初始化位置 不对。
+            List<Point> points = new ArrayList<>();
+            for (ContourPoint contourPoint : contourPoints) {
+                Point point = new Point();
+                point.x = contourPoint.getContourPointX();
+                point.y = contourPoint.getContourPointY();
+                points.add(point);
+            }
+            MatOfPoint matOfPoint = new MatOfPoint();
+            matOfPoint.fromList(points);
+            matOfPoints.add(matOfPoint);
+
+        }
+
+        //画轮廓
+        Imgproc.drawContours(temp, matOfPoints, -1, new Scalar(255, 255, 255), 5);
 
         //使用时间戳
         String proMapName = System.currentTimeMillis() + ".jpg";
         System.out.println(Imgcodecs.imwrite(FilePath.PRO_MAP_FILE_PATH.getPath() + proMapName, temp));
 
-        proMapNamePO.setContourName(contourName);
-        proMapNamePO.setContourYear(contourYear);
-        proMapNamePO.setProMapName(proMapName);
+        proMapFileNameMapper.insert(contourYear, contourNameStr, proMapName);
 
-        proMapFileNameMapper.insert(contourYear, contourName, proMapName);
-        StringBuilder ssbb = new StringBuilder();
-        ssbb.append("G:\\\\UsedProcessedMap\\\\").append(contourYear).append(contourName).append(".jpg");
-        String outPath = "G:\\\\UsedProcessedMap\\\\" + contourYear + "-" + contourName + ".jpg";
-
-
-        //System.out.println(Imgcodecs.imwrite("C:\\\\Users\\\\icatzfd\\\\Desktop\\\\" + "test1.jpg", temp));
-        String path = "http://localhost:8080/image/" + outPath + ".jpg";
+        String path = FilePath.LOCALHOST_MAP_PATH.getPath() + proMapName;
 
         return path;
+    }
 
+    @Override
+    public List<String> getOneContourRele(Integer contourYear, String contourName) {
+        MapRele mapRele = mapReleMapper.selectOne(contourYear, contourName);
+        if (mapRele == null) {
+            return new ArrayList<String>();
+        }
+
+        //获取前序时间
+        int preContourYear = mapRele.getPreContourYear();
+
+        //前序名字
+        String preContour = mapRele.getPreContour();
+        //获取后序时间
+        int nextContourYear = mapRele.getNextContourYear();
+        //后序名字
+        String nextContour = mapRele.getNextContour();
+
+        //前序地图路径
+        String preMapPath = this.processMapContourPatch(preContourYear, preContour);
+
+        //当前地图路径
+        String curMapPath = this.processMapContour(contourYear, contourName);
+
+        //后序地图路径
+        String nextMapPath = this.processMapContourPatch(nextContourYear, nextContour);
+
+        //将前序、当前、后序地图的路径封装到list
+        List<String> mapPath = new ArrayList<>();
+        mapPath.add(preMapPath);
+        mapPath.add(curMapPath);
+        mapPath.add(nextMapPath);
+
+        return mapPath;
     }
 
 

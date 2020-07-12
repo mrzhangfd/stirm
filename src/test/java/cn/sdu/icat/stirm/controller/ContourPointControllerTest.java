@@ -19,7 +19,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -142,16 +142,16 @@ public class ContourPointControllerTest {
         String name = "蜀山";
 
         int year = 6666;
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("C:\\\\\\\\Users\\\\\\\\icatzfd\\\\\\\\Desktop\\\\\\\\");
         sb.append(name).append(year);
         //File.separator;
         sb.append("33333.jpg");
-        String ss="C:"+File.separator+"Users"+File.separator+"icatzfd"+File.separator+"Desktop"+File.separator+name+year+".jpg";
+        String ss = "C:" + File.separator + "Users" + File.separator + "icatzfd" + File.separator + "Desktop" + File.separator + name + year + ".jpg";
         ss = URLDecoder.decode(ss, "UTF-8");
         System.out.println(ss);
         //Imgcodecs.imwrite(sb.toString(), src);
-        System.out.println(Imgcodecs.imwrite(ss,src));
+        System.out.println(Imgcodecs.imwrite(ss, src));
     }
 
     @Test
@@ -178,16 +178,48 @@ public class ContourPointControllerTest {
         String name = "蜀山";
 
         int year = 6666;
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("C:\\\\\\\\Users\\\\\\\\icatzfd\\\\\\\\Desktop\\\\\\\\");
         sb.append(name).append(year);
         //File.separator;
         sb.append("33333.jpg");
-        String ss="C:"+File.separator+"Users"+File.separator+"icatzfd"+File.separator+"Desktop"+File.separator+name+year+".jpg";
+        String ss = "C:" + File.separator + "Users" + File.separator + "icatzfd" + File.separator + "Desktop" + File.separator + name + year + ".jpg";
         ss = URLDecoder.decode(ss, "UTF-8");
         System.out.println(ss);
         //Imgcodecs.imwrite(sb.toString(), src);
-        System.out.println(Imgcodecs.imwrite(ss,src));
+        System.out.println(Imgcodecs.imwrite(ss, src));
+    }
+
+    @Test
+    public void testPatch() {
+        String contourNameStr = "孙吴+蜀汉+曹魏";
+        int contourYear = 229;
+        contourService.processMapContourPatch(contourYear, contourNameStr);
+    }
+
+    @Test
+    public void testArrow() {
+        //加载opencv的dll文件
+        String opencvPath = FilePath.OPENCV_FILE_PATH.getPath();
+        System.load(opencvPath);
+
+        //读入图片
+        Mat src = Imgcodecs.imread(FilePath.MAP_FILE_PATH.getPath() + 280 + ".jpg");
+
+        //复制到temp
+        Mat temp = new Mat();
+        src.copyTo(temp);
+        Map<String,Point> map=new HashMap<>();
+        Point pt1=new Point(2573.5, 1115.5);
+        Point pt2=new Point(2651.5, 1076.5);
+        Point pt3=new Point(2683.5, 875.0);
+        List<Point> points=new ArrayList<>(Arrays.asList(pt1,pt2,pt3));
+        for(int i=0;i<points.size()-1;i++){
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i+1), new Scalar(255, 255, 255),5,8,0,0.1);
+        }
+        //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
+        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testArrow1.jpg", temp));
+
     }
 
 }
