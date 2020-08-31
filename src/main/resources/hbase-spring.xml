@@ -19,5 +19,4 @@
     <!-- HbaseTemplate Bean配置-->
     <bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate"
           p:configuration-ref="hbaseConfiguration"/>
-
 </beans>

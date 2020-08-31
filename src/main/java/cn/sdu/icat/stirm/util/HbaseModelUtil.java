@@ -6,7 +6,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * Hbase 模型工具类
- * @author icatzfd
+ * @author J
  * Created on 2020/6/8 15:27.
  */
 public class HbaseModelUtil {

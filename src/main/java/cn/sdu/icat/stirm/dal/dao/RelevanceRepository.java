@@ -6,6 +6,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 import java.util.List;
 
+//<Relevance,String>  Relevance 表示存储类型，String 表示主键的类型
 public interface RelevanceRepository extends ElasticsearchRepository<Relevance,String> {
 
     Relevance queryRelevanceByRId(String rId);

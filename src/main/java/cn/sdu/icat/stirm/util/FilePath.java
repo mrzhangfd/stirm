@@ -30,6 +30,9 @@ public enum FilePath {
      */
     PRO_MAP_FILE_PATH("G:" + File.separator + "UsedProcessedMap" + File.separator),
 
+    /**
+     * 测试图片路径
+     */
     DESKTOP("G:"+File.separator+"testimage"+File.separator);
 
     private String path;

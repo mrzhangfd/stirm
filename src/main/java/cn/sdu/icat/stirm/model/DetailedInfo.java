@@ -5,7 +5,9 @@ import lombok.Data;
 
 
 /**
- * Created by J on  17-10-23.
+ *
+ * @author J
+ * @date 17-10-23
  */
 
 @Data
