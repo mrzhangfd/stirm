@@ -11,6 +11,7 @@ import cn.sdu.icat.stirm.model.PO.ProMapNamePO;
 import cn.sdu.icat.stirm.model.VO.ContourInfoVO;
 import cn.sdu.icat.stirm.service.ContourService;
 import cn.sdu.icat.stirm.util.FilePath;
+import cn.sdu.icat.stirm.util.ListUtil;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * 轮廓实现类
@@ -42,6 +44,9 @@ public class ContourServiceImpl implements ContourService {
 
     @Autowired
     private ProMapFileNameMapper proMapFileNameMapper;
+
+    @Autowired
+    private ThreadPoolService threadPoolService;
 
 
     @Override
@@ -191,6 +196,17 @@ public class ContourServiceImpl implements ContourService {
 
     @Override
     public String processMapContour(Integer contourYear, String contourName) {
+        //手写线程池，七个参数。同时指定工作队列大小。
+        //如果使用jdk创建线程池，工作队列默认最大值。容易造成oom
+        ExecutorService threadPool = new ThreadPoolExecutor(
+                8,
+                12,
+                1,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(4),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.DiscardPolicy());
+
 
         //先查询是否存在已经处理过的图片，若存在，直接返回路径，若不存在，写入数据库
         ProMapNamePO proMapNamePO = proMapFileNameMapper.selectOne(contourYear, contourName);
@@ -216,6 +232,8 @@ public class ContourServiceImpl implements ContourService {
 
         List<MatOfPoint> matOfPoints = new ArrayList<>();
         matOfPoints.add(matOfPoint);
+
+        List<List<MatOfPoint>> lists = ListUtil.averageAssign(matOfPoints, 8);
         //读入图片
         Mat src = Imgcodecs.imread(FilePath.MAP_FILE_PATH.getPath() + contourYear + ".jpg");
 
@@ -228,15 +246,24 @@ public class ContourServiceImpl implements ContourService {
 
         Mat temp = new Mat();
         src.copyTo(temp);
-
+        for (int i = 0; i < 8; i++) {
+            int finalI = i;
+            threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //画出轮廓
+                    Imgproc.drawContours(temp, lists.get(finalI), 0, new Scalar(255, 255, 255), 5);
+                }
+            });
+        }
         //画出轮廓
-        Imgproc.drawContours(temp, matOfPoints, 0, new Scalar(255, 255, 255), 5);
+      //  Imgproc.drawContours(temp, matOfPoints, 0, new Scalar(255, 255, 255), 5);
 
         //使用时间戳
         String proMapName = System.currentTimeMillis() + ".jpg";
         System.out.println(Imgcodecs.imwrite(FilePath.PRO_MAP_FILE_PATH.getPath() + proMapName, temp));
 
-        proMapFileNameMapper.insert(contourYear, contourName, proMapName);
+        //proMapFileNameMapper.insert(contourYear, contourName, proMapName);
 
         String path = FilePath.LOCALHOST_MAP_PATH.getPath() + proMapName;
 
