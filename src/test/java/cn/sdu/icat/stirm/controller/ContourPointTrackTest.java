@@ -5,22 +5,21 @@ import cn.sdu.icat.stirm.model.ContourPoint;
 import cn.sdu.icat.stirm.service.ContourService;
 import cn.sdu.icat.stirm.util.FilePath;
 import org.junit.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
-import org.opencv.core.*;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author icatzfd
@@ -28,7 +27,7 @@ import java.util.List;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class ContourPointControllerTest {
+public class ContourPointTrackTest {
 
     @Autowired
     ContourPointMapper contourPointMapper;
@@ -197,7 +196,30 @@ public class ContourPointControllerTest {
         contourService.processMapContourPatch(contourYear, contourNameStr);
     }
 
+    @Test
+    public void testArrow() {
+        //加载opencv的dll文件
+        String opencvPath = FilePath.OPENCV_FILE_PATH.getPath();
+        System.load(opencvPath);
 
+        //读入图片
+        Mat src = Imgcodecs.imread(FilePath.MAP_FILE_PATH.getPath() + 280 + ".jpg");
+
+        //复制到temp
+        Mat temp = new Mat();
+        src.copyTo(temp);
+        Map<String,Point> map=new HashMap<>();
+        Point pt1=new Point(2573.5, 1115.5);
+        Point pt2=new Point(2651.5, 1076.5);
+        Point pt3=new Point(2683.5, 875.0);
+        List<Point> points=new ArrayList<>(Arrays.asList(pt1,pt2,pt3));
+        for(int i=0;i<points.size()-1;i++){
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i+1), new Scalar(255, 255, 255),5,8,0,0.1);
+        }
+        //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
+        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testArrow1.jpg", temp));
+
+    }
 
 }
 

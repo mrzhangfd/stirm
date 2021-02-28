@@ -1,10 +1,14 @@
 package cn.sdu.icat.stirm;
 
 import cn.sdu.icat.stirm.dal.dao.ArticleRepository;
+import cn.sdu.icat.stirm.dal.dao.AuthorRepository;
 import cn.sdu.icat.stirm.dal.dao.EventRepository;
 import cn.sdu.icat.stirm.dal.dao.HbaseDao;
 import cn.sdu.icat.stirm.model.Article;
+import cn.sdu.icat.stirm.model.Author;
 import cn.sdu.icat.stirm.model.Event;
+import cn.sdu.icat.stirm.service.ObjectService;
+import cn.sdu.icat.stirm.util.HbaseModelUtil;
 import org.apache.hadoop.hbase.client.Result;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -20,6 +24,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -37,6 +42,12 @@ public class StirmApplicationTests {
 
     @Autowired
     ArticleRepository articleRepository;
+
+    @Autowired
+    AuthorRepository authorRepository;
+
+    @Autowired
+    ObjectService objectService;
 
     @Test
     public void contextLoads() {
@@ -64,19 +75,53 @@ public class StirmApplicationTests {
     }
 
     @Test
+    public void testEventRepository1() {
+        System.out.println("++++++++++++++++++++");
+        String str="09-09";
+        String year="";
+        List<Event> res=new ArrayList<>();
+        for(int i=1;i<2050;i++){
+             year=String.format("%0"+4+"d",i);
+            List<Event> events=eventRepository.queryEventsByTs(year+"-"+str);
+            for(Event event:events){
+
+                if(event.getSite()!="未知"){
+                    System.out.println(event.getSite());
+                    res.add(event);
+                }
+            }
+        }
+        System.out.println(res.size());
+
+    }
+
+    @Test
+    public void testFindHBaseByEventId(){
+        String eventId="9b4cb5af-7daa-403a-a09d-b1241235b3b4";
+        String name="顾毓琇";
+
+    }
+
+    @Test
     public void createIndex() {
         template.createIndex(Article.class);
     }
 
+
+
     @Test
     public void addDocument() {
         //往es中添加文档
-        Article article = new Article();
+        /*Article article = new Article();
         article.setId("222");
         article.setTitle("标题2");
-        article.setContent("内容2");
-
-        articleRepository.save(article);
+        article.setContent("内容2");*/
+        Author author=new Author();
+        author.setId("2022");
+        author.setName("zzffdd");
+        author.setBirthday("95-12-13");
+        author.setNum(123);
+        authorRepository.save(author);
     }
 
     @Test
@@ -121,9 +166,19 @@ public class StirmApplicationTests {
                 withQuery(QueryBuilders.queryStringQuery("搜索内容").defaultField("content")).
                 withPageable(new PageRequest(0, 15)).
                 build();
-        //知行查询
+        //自行查询
         List<Article> articles = template.queryForList(query, Article.class);
         articles.forEach(a -> System.out.println(a));
     }
+
+
+    @Test
+    public void findTimeLineByName() {
+        //使用人名，查询对象的时间线
+       String name="苏轼";
+       System.out.println(objectService.getEntitiesByPrefix(name));
+
+    }
+
 
 }

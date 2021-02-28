@@ -1,13 +1,22 @@
 package cn.sdu.icat.stirm.service.impl;
 
+import cn.sdu.icat.stirm.dal.dao.EventRepository;
 import cn.sdu.icat.stirm.dal.dao.HbaseDao;
+import cn.sdu.icat.stirm.dal.mapper.SiteInfoMapper;
 import cn.sdu.icat.stirm.model.Event;
 import cn.sdu.icat.stirm.model.HbaseModel;
 import cn.sdu.icat.stirm.model.RealEntity;
+import cn.sdu.icat.stirm.model.Site;
 import cn.sdu.icat.stirm.service.ObjectService;
+import cn.sdu.icat.stirm.util.FilePath;
 import cn.sdu.icat.stirm.util.HbaseModelUtil;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +33,12 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
     HbaseDao hbaseDao;
+
+    @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
+    SiteInfoMapper siteInfoMapper;
 
     @Override
     public List<RealEntity> getEntitiesByPrefix(String prefix) {
@@ -59,8 +74,74 @@ public class ObjectServiceImpl implements ObjectService {
         return entities;
     }
 
+    @Override
+    public RealEntity getObjectTimeLine(String name) throws Exception {
+        List<RealEntity> realEntities = this.getEntitiesByPrefix(name);
+        String objectId = realEntities.get(0).getObjectId();
+
+
+        return this.findEntityByIdFromEs(objectId);
+    }
+
+    @Override
+    public RealEntity findEntityByIdFromEs(String objectId) throws Exception {
+        Result result = hbaseDao.getDataFromRowkey(HbaseModelUtil.BASICTABLE, objectId);
+        RealEntity realEntity = new RealEntity();
+        realEntity.setObjectId(objectId);
+        for (KeyValue kv : result.list()) {
+            HbaseModel hbaseModel = HbaseModelUtil.kvToHbaseModel(kv);
+            realEntity = packModelFromEs(realEntity, hbaseModel);
+        }
+        return realEntity;
+    }
+
+    @Override
+    public String processMapObjectTrack(String name) throws Exception {
+        //加载opencv的dll文件
+        String opencvPath = FilePath.OPENCV_FILE_PATH.getPath();
+        System.load(opencvPath);
+        List<RealEntity> realEntities = this.getEntitiesByPrefix(name);
+        String objectId = realEntities.get(0).getObjectId();
+
+        RealEntity entityByIdFromEs = this.findEntityByIdFromEs(objectId);
+        int year = Integer.parseInt(entityByIdFromEs.getEvents().get(0).getTs().substring(0, 4));
+        List<Site> sites = new ArrayList<>();
+        for (Event event : entityByIdFromEs.getEvents()) {
+            sites.add(siteInfoMapper.selectOne(year, event.getSite()));
+        }
+
+        List<Point> points = new ArrayList<>();
+        for (Site site : sites) {
+            String tmp = site.getSiteContour();
+            String first = tmp.split(",")[0];
+            String x = first.substring(1);
+            String second = tmp.split(",")[1];
+            String y = second.substring(0, second.length() - 1);
+            Point point=new Point(Double.parseDouble(x),Double.parseDouble(y));
+            points.add(point);
+        }
+
+        //读入图片
+        Mat src = Imgcodecs.imread(FilePath.MAP_FILE_PATH.getPath() + year + ".jpg");
+
+        //复制到temp
+        Mat temp = new Mat();
+        src.copyTo(temp);
+        Map<String, Point> map = new HashMap<>();
+
+        for (int i = 0; i < points.size() - 1; i++) {
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1), new Scalar(255, 255, 255), 2, 8, 0, 0.1);
+           // Imgproc.circle(temp, points.get(i), 2, new Scalar(255, 255, 255), 10, 8, 0);
+           // Imgproc.putText(temp, "test", points.get(i), 1, 2, new Scalar(255, 255, 255), 10);
+        }
+        //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
+        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testyear.jpg", temp));
+
+        return null;
+    }
+
     public RealEntity packageModel(RealEntity realEntity, HbaseModel hbaseModel) {
-        System.out.println(hbaseModel.getFamilyName());
+        //System.out.println(hbaseModel.getFamilyName());
         ArrayList<Event> eventList = realEntity.getEvents();
         if (HbaseModelUtil.BASIC_EVENT.equals(hbaseModel.getFamilyName())) {
             Event event = new Event();
@@ -98,6 +179,35 @@ public class ObjectServiceImpl implements ObjectService {
             }
 
         }
+        return realEntity;
+    }
+
+
+    public RealEntity packModelFromEs(RealEntity realEntity, HbaseModel hbaseModel) {
+        //System.out.println(hbaseModel.getFamilyName());
+        ArrayList<Event> eventList = realEntity.getEvents();
+        if (HbaseModelUtil.BASIC_EVENT.equals(hbaseModel.getFamilyName())) {
+
+            String eventId = hbaseModel.getValue();
+            Event eventByEventId = eventRepository.queryEventByEventId(eventId);
+            if (eventByEventId != null) {
+                eventList.add(eventByEventId);
+            }
+
+        }
+        if (HbaseModelUtil.BASIC_RAW.equals(hbaseModel.getFamilyName())) {
+            if (hbaseModel.getQualifier().equals(HbaseModelUtil.COLUMN2)) {
+                realEntity.setRawInfo(hbaseModel.getValue());
+            } else if (hbaseModel.getQualifier().equals(HbaseModelUtil.COLUMN1)) {
+                realEntity.setRealName(hbaseModel.getValue());
+            } else {
+                Map<String, String> params = realEntity.getParams();
+                params.put(hbaseModel.getQualifier(), hbaseModel.getValue());
+                realEntity.setParams(params);
+            }
+
+        }
+        realEntity.setEvents(eventList);
         return realEntity;
     }
 }

@@ -1,6 +1,7 @@
 package cn.sdu.icat.stirm.controller;
 
 import cn.sdu.icat.stirm.checker.ContourChecker;
+import cn.sdu.icat.stirm.model.ContourEvolu;
 import cn.sdu.icat.stirm.model.ContourInfo;
 import cn.sdu.icat.stirm.model.VO.ContourInfoVO;
 import cn.sdu.icat.stirm.service.ContourService;
@@ -83,6 +84,16 @@ public class ContourController {
         String mapPath = contourService.processMapContour(contourYear, contourName);
         return ResponseResult.success("success", mapPath);
 
+    }
+
+    @GetMapping("/getcontourevolu")
+    public @ResponseBody ResponseResult<List<ContourEvolu>> getContourEvolu
+            (@RequestParam("contourYear") Integer contourYear, @RequestParam("contourName") String contourName){
+        //1、参数校验
+        //ContourChecker.check4GetContourInfo(contourYear, contourName);
+
+        //2、获取轮廓信息
+        return ResponseResult.success("success", contourService.getOneContourEvolu(contourYear, contourName));
     }
 
 }

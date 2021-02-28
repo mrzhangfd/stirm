@@ -1,5 +1,6 @@
 package cn.sdu.icat.stirm.service;
 
+import cn.sdu.icat.stirm.model.ContourEvolu;
 import cn.sdu.icat.stirm.model.ContourInfo;
 import cn.sdu.icat.stirm.model.ContourPoint;
 import cn.sdu.icat.stirm.model.VO.ContourInfoVO;
@@ -105,4 +106,12 @@ public interface ContourService {
      * @return 该区划的关联区划的图片路径
      */
     List<String> getOneContourRele(Integer contourYear, String contourName);
+
+    /**
+     * 获取一个区划的关联演进
+     * @param contourYear
+     * @param contourName
+     * @return
+     */
+    List<ContourEvolu> getOneContourEvolu(Integer contourYear, String contourName);
 }

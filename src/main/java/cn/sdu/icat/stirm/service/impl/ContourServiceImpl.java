@@ -1,9 +1,7 @@
 package cn.sdu.icat.stirm.service.impl;
 
-import cn.sdu.icat.stirm.dal.mapper.ContourInfoMapper;
-import cn.sdu.icat.stirm.dal.mapper.ContourPointMapper;
-import cn.sdu.icat.stirm.dal.mapper.MapReleMapper;
-import cn.sdu.icat.stirm.dal.mapper.ProMapFileNameMapper;
+import cn.sdu.icat.stirm.dal.mapper.*;
+import cn.sdu.icat.stirm.model.ContourEvolu;
 import cn.sdu.icat.stirm.model.ContourInfo;
 import cn.sdu.icat.stirm.model.ContourPoint;
 import cn.sdu.icat.stirm.model.MapRele;
@@ -47,6 +45,9 @@ public class ContourServiceImpl implements ContourService {
 
     @Autowired
     private ThreadPoolService threadPoolService;
+
+    @Autowired
+    private ContourEvoluMappper contourEvoluMappper;
 
 
     @Override
@@ -257,7 +258,7 @@ public class ContourServiceImpl implements ContourService {
             });
         }
         //画出轮廓
-      //  Imgproc.drawContours(temp, matOfPoints, 0, new Scalar(255, 255, 255), 5);
+        //  Imgproc.drawContours(temp, matOfPoints, 0, new Scalar(255, 255, 255), 5);
 
         //使用时间戳
         String proMapName = System.currentTimeMillis() + ".jpg";
@@ -361,6 +362,13 @@ public class ContourServiceImpl implements ContourService {
         mapPath.add(nextMapPath);
 
         return mapPath;
+    }
+
+    @Override
+    public List<ContourEvolu> getOneContourEvolu(Integer contourYear, String contourName) {
+        List<ContourEvolu> contourEvolus = new ArrayList<>();
+        contourEvolus.add(contourEvoluMappper.selectOne(contourYear, contourName));
+        return contourEvolus;
     }
 
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.ContourEvoluMappper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.ContourEvolu">
+        <id property="id" column="id"/>
+        <result property="mapYear" column="map_year"/>
+        <result property="contourName" column="contour_name"/>
+        <result property="preContourYear" column="pre_contour_year"/>
+        <result property="preContour" column="pre_contour"/>
+        <result property="preEvolution" column="pre_evolution"/>
+        <result property="nextContourYear" column="next_contour_year"/>
+        <result property="nextContour" column="next_contour"/>
+        <result property="nextEvolution" column="next_evolution"/>
+
+    </resultMap>
+
+    <sql id="tableName">
+        map_evolution_detail
+    </sql>
+
+    <sql id="tableColumns">
+        id,map_year,contour_name,pre_contour_year,pre_contour,pre_evolution,next_contour_year,next_contour,next_evolution
+    </sql>
+    <select id="selectOne" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where map_year=#{mapYear} and contour_name=#{contourName}
+    </select>
+
+</mapper>

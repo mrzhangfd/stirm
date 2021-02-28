@@ -11,9 +11,9 @@ import java.util.List;
  * @author icatzfd
  * Created on 2020/8/31 14:53.
  */
-public interface ArticleRepository extends ElasticsearchRepository<Article, String> {
+public interface AuthorRepository extends ElasticsearchRepository<Author, String> {
 
-    Article queryArticleByNum(String num);
+    //Article queryArticleByNum(String num);
 
 
     /**
@@ -25,7 +25,7 @@ public interface ArticleRepository extends ElasticsearchRepository<Article, Stri
      * 可以对内容分词，然后检索。分词之间是 and的关系，也就是 必须同时包括内容的每个分词
      * 百度搜索用的 ：每个分词之间应该是or的关系
      */
-    List<Article> queryArticleByTitleOrContent (String title, String content, Pageable pageable);
+    //List<Article> queryArticleByTitleOrContent (String title, String content, Pageable pageable);
 
-    void save(Author author);
+
 }

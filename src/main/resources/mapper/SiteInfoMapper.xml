@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sdu.icat.stirm.dal.mapper.SiteInfoMapper">
+    <resultMap id="resultMap" type="cn.sdu.icat.stirm.model.Site">
+
+        <result property="siteYear" column="site_year"/>
+        <result property="siteName" column="site_name"/>
+        <result property="siteContour" column="site_contour"/>
+        <result property="siteSlope" column="site_slope"/>
+        <result property="siteLength" column="site_length"/>
+        <result property="siteCentre" column="site_centre"/>
+
+
+    </resultMap>
+
+    <sql id="tableName">
+        site_info
+    </sql>
+
+    <sql id="tableColumns">
+        site_year,site_name,site_contour,site_slope,site_length,site_centre
+    </sql>
+    <select id="selectOne" resultMap="resultMap">
+        select
+        <include refid="tableColumns"/>
+        from
+        <include refid="tableName"/>
+        where site_year=#{siteYear} and site_name=#{siteName}
+    </select>
+
+</mapper>
