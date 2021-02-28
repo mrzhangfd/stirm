@@ -217,7 +217,7 @@ public class ContourPointTrackTest {
             Imgproc.arrowedLine(temp, points.get(i), points.get(i+1), new Scalar(255, 255, 255),5,8,0,0.1);
         }
         //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
-        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testArrow1.jpg", temp));
+        System.out.println(Imgcodecs.imwrite(FilePath.TEST_IMAGE.getPath() + "testArrow1.jpg", temp));
 
     }
 

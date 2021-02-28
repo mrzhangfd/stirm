@@ -1,6 +1,5 @@
 package cn.sdu.icat.stirm.controller;
 
-import cn.sdu.icat.stirm.model.RealEntity;
 import cn.sdu.icat.stirm.service.ObjectService;
 import cn.sdu.icat.stirm.util.FilePath;
 import org.junit.Test;
@@ -58,12 +57,12 @@ public class ObjectControllerTest {
         Point pt3=new Point(2683.5, 875.0);
         List<Point> points=new ArrayList<>(Arrays.asList(pt1,pt2,pt3));
         for(int i=0;i<points.size()-1;i++){
-            Imgproc.arrowedLine(temp, points.get(i), points.get(i+1), new Scalar(255, 255, 255),2,8,0,0.1);
-            Imgproc.circle(temp,points.get(i),2,new Scalar(255, 255, 255),10,8,0);
-            Imgproc.putText(temp,"test",points.get(i),1,2,new Scalar(255, 255, 255),10);
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i+1), new Scalar(255, 255, 255));
+           /* Imgproc.circle(temp,points.get(i),2,new Scalar(255, 255, 255),10,8,0);
+            Imgproc.putText(temp,"test",points.get(i),1,2,new Scalar(255, 255, 255),10);*/
         }
         //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
-        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testArrow2.jpg", temp));
+        System.out.println(Imgcodecs.imwrite(FilePath.TEST_IMAGE.getPath() + "testArrow2.jpg", temp));
 
     }
 

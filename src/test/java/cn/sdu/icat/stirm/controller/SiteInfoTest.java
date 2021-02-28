@@ -6,8 +6,10 @@ import cn.sdu.icat.stirm.model.RealEntity;
 import cn.sdu.icat.stirm.model.Site;
 import cn.sdu.icat.stirm.service.ObjectService;
 import cn.sdu.icat.stirm.util.FilePath;
+import cn.sdu.icat.stirm.util.ImageUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -17,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -76,13 +81,30 @@ public class SiteInfoTest {
         Map<String, Point> map = new HashMap<>();
 
         for (int i = 0; i < points.size() - 1; i++) {
-            Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1), new Scalar(255, 255, 255), 2, 8, 0, 0.1);
-            // Imgproc.circle(temp, points.get(i), 2, new Scalar(255, 255, 255), 10, 8, 0);
-            // Imgproc.putText(temp, "test", points.get(i), 1, 2, new Scalar(255, 255, 255), 10);
-
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1),
+                    new Scalar(255, 255, 255),2,8,0,0.1);
         }
+
+        BufferedImage bufferedImage= ImageUtil.Mat2BufImg(temp,".jpg");
+        Graphics2D graphics=bufferedImage.createGraphics();
+        graphics.drawImage(bufferedImage,0,0,bufferedImage.getWidth(),bufferedImage.getHeight(),null);
+        //设置字体
+        Font font = new Font("微软雅黑", Font.PLAIN, 12);
+        graphics.setFont(font);
+
+        for (int i = 0; i < points.size() - 1; i++) {
+
+            graphics.drawString(sites.get(i).getSiteName(),
+                    new Double(points.get(i).x+20).floatValue(),
+                    new Double(points.get(i).y+5).floatValue());
+        }
+        //设置坐标
+
+        graphics.dispose();
+        temp= ImageUtil.BufImg2Mat(bufferedImage,BufferedImage.TYPE_3BYTE_BGR, CvType.CV_8UC3);
+
         //Imgproc.arrowedLine(temp, new Point(2517.0, 994.0), new Point(2711, 906), new Scalar(255, 255, 255));
-        System.out.println(Imgcodecs.imwrite(FilePath.DESKTOP.getPath() + "testyear.jpg", temp));
+        System.out.println(Imgcodecs.imwrite(FilePath.TEST_IMAGE.getPath() + "testyear.jpg", temp));
 
 
 

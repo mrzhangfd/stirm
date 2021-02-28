@@ -33,7 +33,7 @@ public enum FilePath {
     /**
      * 测试图片路径
      */
-    DESKTOP("G:"+File.separator+"testimage"+File.separator);
+    TEST_IMAGE("G:"+File.separator+"testimage"+File.separator);
 
     private String path;
 
