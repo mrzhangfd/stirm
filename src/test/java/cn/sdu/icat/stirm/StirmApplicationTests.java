@@ -57,8 +57,8 @@ public class StirmApplicationTests {
     public void testHbaseDao() {
         String tableName = "Object";
         String keyBegin = "毛泽东";
-        //List<Result> list = hbaseDao.findAll(tableName);
-        List<Result> list = hbaseDao.getDataWithSameBegining(tableName, keyBegin);
+        List<Result> list = hbaseDao.findAll(tableName);
+        //List<Result> list = hbaseDao.getDataWithSameBegining(tableName, keyBegin);
         System.out.println(list.size());
         System.out.println("========================================");
     }

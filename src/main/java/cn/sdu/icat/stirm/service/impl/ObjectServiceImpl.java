@@ -108,15 +108,11 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public String processMapObjectTrack(String name) throws Exception {
 
-
-
-
         //加载opencv的dll文件
         String opencvPath = FilePath.OPENCV_FILE_PATH.getPath();
         System.load(opencvPath);
         List<RealEntity> realEntities = this.getEntitiesByPrefix(name);
         String objectId = realEntities.get(0).getObjectId();
-
 
 
         RealEntity entityByIdFromEs = this.findEntityByIdFromEs(objectId);
@@ -133,9 +129,17 @@ public class ObjectServiceImpl implements ObjectService {
         for (Event event : entityByIdFromEs.getEvents()) {
             sites.add(siteInfoMapper.selectOne(year, event.getSite()));
         }
+        //Map用来存储地点 对应该出现的次数
+        Map<String, Integer> siteNumMap = new HashMap<>();
 
         List<Point> points = new ArrayList<>();
         for (Site site : sites) {
+            if (!siteNumMap.containsKey(site.getSiteName())) {
+                siteNumMap.put(site.getSiteName(), 1);
+            } else {
+                int num = siteNumMap.get(site.getSiteName());
+                siteNumMap.put(site.getSiteName(), num + 1);
+            }
             String tmp = site.getSiteCentre();
             String first = tmp.split(",")[0];
             String x = first.substring(1);
@@ -153,8 +157,8 @@ public class ObjectServiceImpl implements ObjectService {
         src.copyTo(temp);
 
         for (int i = 0; i < points.size() - 1; i++) {
-            Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1), new Scalar(255, 255, 255), 2, 8, 0, 0.1);
-
+            Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1), new Scalar(255, 255, 255), 2, 8, 0, 0.05);
+            Imgproc.drawMarker(temp,points.get(i),new Scalar(0,255,255),1,siteNumMap.get(sites.get(i).getSiteName())*10,5,6);
         }
 
         BufferedImage bufferedImage = ImageUtil.Mat2BufImg(temp, ".jpg");
@@ -170,8 +174,8 @@ public class ObjectServiceImpl implements ObjectService {
                     new Double(points.get(i).x + 20).floatValue(),
                     new Double(points.get(i).y + 5).floatValue());
         }
-        //设置坐标
 
+        //设置坐标
         graphics.dispose();
         temp = ImageUtil.BufImg2Mat(bufferedImage, BufferedImage.TYPE_3BYTE_BGR, CvType.CV_8UC3);
 

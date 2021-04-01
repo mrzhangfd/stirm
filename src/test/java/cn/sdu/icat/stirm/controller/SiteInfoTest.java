@@ -82,7 +82,8 @@ public class SiteInfoTest {
 
         for (int i = 0; i < points.size() - 1; i++) {
             Imgproc.arrowedLine(temp, points.get(i), points.get(i + 1),
-                    new Scalar(255, 255, 255),2,8,0,0.1);
+                    new Scalar(255, 255, 255));
+
         }
 
         BufferedImage bufferedImage= ImageUtil.Mat2BufImg(temp,".jpg");
@@ -110,8 +111,44 @@ public class SiteInfoTest {
 
     }
 
+    @Test
+    public void testDist() throws Exception {
+        String name="苏轼";
 
+        List<RealEntity> realEntities = objectService.getEntitiesByPrefix(name);
+        String objectId = realEntities.get(0).getObjectId();
 
+        RealEntity entityByIdFromEs = objectService.findEntityByIdFromEs(objectId);
+        List<Event> events=entityByIdFromEs.getEvents();
+        events.remove(events.size()-1);
+        int year = Integer.parseInt(entityByIdFromEs.getEvents().get(0).getTs().substring(0, 4));
 
+        List<Site> sites = new ArrayList<>();
+        for (Event event : entityByIdFromEs.getEvents()) {
+            sites.add(siteInfoMapper.selectOne(year, event.getSite()));
+        }
+
+        List<Point> points = new ArrayList<>();
+        for (Site site : sites) {
+            String tmp = site.getSiteCentre();
+            String first = tmp.split(",")[0];
+            String x = first.substring(1);
+            String second = tmp.split(",")[1];
+            String y = second.substring(0, second.length() - 1);
+
+            Point point=new Point(Double.parseDouble(x),Double.parseDouble(y));
+            points.add(point);
+        }
+
+        List<String> disList=new ArrayList<>();
+        for(int i=1;i<sites.size();i++){
+            double dis=
+                    Math.sqrt((points.get(i).x-points.get(i-1).x)*(points.get(i).x-points.get(i-1).x)+(points.get(i).y-points.get(i-1).y)*(points.get(i).y-points.get(i-1).y));
+
+            disList.add(String.format("%.2f",dis));
+        }
+        System.out.println(disList);
+
+    }
 
 }

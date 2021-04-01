@@ -66,6 +66,11 @@ public class ObjectControllerTest {
 
     }
 
+    @Test
+    public void testMarker() throws Exception {
+        objectService.processMapObjectTrack("苏轼");
+    }
+
 
 
 }
